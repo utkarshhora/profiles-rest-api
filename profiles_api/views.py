@@ -2,8 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 
 from profiles_api import serializers
+from profiles_api import models
+from profiles_api import permissions
 
 
 # Create your views here.
@@ -28,7 +31,7 @@ class HelloApiView(APIView):
 
         if serializer.is_valid():
             name = serializer.validated_data.get('name')
-            message = f'Hello {name}'
+            message = f'Hello API {name}'
             return Response({'message' : message})
 
         else:
@@ -39,15 +42,15 @@ class HelloApiView(APIView):
 
     def put(self, request, pk=None):
         """Handle updating an object"""
-        return Response({"method" : 'PUT'})
+        return Response({"method API" : 'PUT'})
 
     def patch(self, request, pk=None):
         """Handle a partial update"""
-        return Response({'method' : "PATCH"})
+        return Response({'method API' : "PATCH"})
 
     def delete(self, request, pk=None):
         """Delete an object"""
-        return Response({'Method' : 'Delete'})
+        return Response({'Method API' : 'Delete'})
 
 
 
@@ -64,7 +67,7 @@ class HelloViewSet(viewsets.ViewSet):
         'Provides more functionality with less code'
         ]
 
-        return Response ({'message' : 'Hello', 'a_viewset' : a_viewset})
+        return Response ({'message ViewSet' : 'Hello', 'A  viewset' : a_viewset})
 
 
     def create(self, request):
@@ -74,7 +77,7 @@ class HelloViewSet(viewsets.ViewSet):
         if serializer.is_valid():
             name = serializer.validated_data.get('name')
             message = f'Hello {name}'
-            return Response({'message' : message})
+            return Response({'message ViewSet' : message})
         else:
             return Response(
             serializer.errors,
@@ -84,16 +87,25 @@ class HelloViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         """Handle Getting an object using its ID"""
-        return Response({'http_method':'GET'})
+        return Response({'http_method ViewSet':'GET'})
 
     def update(self, request, pk=None):
         """Handle Updating an object"""
-        return Response({'Http_Method':'PUT'})
+        return Response({'Http_Method ViewSet':'PUT'})
 
     def partial_update(self, request, pk=None):
         """Handle updating update of an object"""
-        return Response({'http_method':'PATCH'})
+        return Response({'http_method ViewSet':'PATCH'})
 
     def destroy(self, request, pk=None):
         """Handle removing an object"""
-        return Response({'http_method':'DELETE'})
+        return Response({'http_method ViewSet':'DELETE'})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handle Creating and updating profiles"""
+
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.UpdateOwnProfile,)
